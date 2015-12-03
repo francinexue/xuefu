@@ -12,7 +12,7 @@
       3.plt_macd()
          算出macd并作图的示例
       4.change_type_to_yahoo():（需运行）
-         下载完成后需调用此方法转换为pyalotrade可识别的类型，存储于d:/data2/
+         下载完成后需调用此方法转换为pyalotrade可识别的类型，存储于d:/data2/,格式为0019.csv
          此处使用的为inuse数据，可以更改为code.csv
       5.get_beta():
         算beta示例
@@ -21,7 +21,10 @@
   调用pyalgo_test.py文件
   方法：
       1.提供两个测试方法： turtle_test():和vwap(plot):，底部有调用
-3.回测主体pyalgo_test.py
+3.回测主体pyalgo_test.py，
+    主体位于onbar()方法，可使用self.__position和self.marketOrder(element, 100)两种方式，效果一样。
+    注意onbar（）是一条条更新，故__init__()中的数据也是随着onbar的滚动而增加。
+    如highlow.Low()最后一参数为存储数据个数，[-1]为当前运行结果，[-2]为上一次，用以调节窗口
   方法：
       1.SMACrossOver():
         示例方法
