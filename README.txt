@@ -19,6 +19,7 @@
 2.进行测试：pyalg_2.py
   调用pyalgotrade方法进行回测，详细内容请读文档：http://gbeced.github.io/pyalgotrade/docs/v0.17/html/tutorial.html
   调用pyalgo_test.py文件
+  调用pyalg_util.py文件
   方法：
       1.提供两个测试方法： turtle_test():和vwap(plot):，底部有调用
 3.回测主体pyalgo_test.py，
@@ -32,4 +33,10 @@
         两只股票组合示例
       3.turtle():
         海龟交易法示例  
+4.最新版本已上传，添加运行时数据信息，格式为dic格式，包含retur、sharpratio、tradeInfo等，见pyalg_util.py
+    调用方法见pyalg_2.py
+    调用pyalgo_test.py文件
+    需在pyalgo_test.py中添加addInfo信息，具体内容有注释
+    ****注意：此方法只为监测数据并返回array，json等格式自己作图用。pyalgotrade本身已带作图方法及基础的信息。
+    若不需要可删除调用部分：pyalg_util.py，pyalgo_test.py中的addInfo 方法，调用部分、getDateTImeSeries方法部分。
       
