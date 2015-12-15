@@ -33,10 +33,16 @@
         两只股票组合示例
       3.turtle():
         海龟交易法示例  
-4.最新版本已上传，添加运行时数据信息，格式为dic格式，包含retur、sharpratio、tradeInfo等，见pyalg_util.py
+4.最新版本已上传：pyalg_util.py，添加运行时数据信息，格式为dic格式，包含retur、sharpratio、tradeInfo等
     调用方法见pyalg_2.py
     调用pyalgo_test.py文件
     需在pyalgo_test.py中添加addInfo信息，具体内容有注释
     ****注意：此方法只为监测数据并返回array，json等格式自己作图用。pyalgotrade本身已带作图方法及基础的信息。
-    若不需要可删除调用部分：pyalg_util.py，pyalgo_test.py中的addInfo 方法，调用部分、getDateTImeSeries方法部分。
+    若不需要可删除调用部分：pyalg_util.py，pyalgo_test.py中的addInfo 方法，调用部分、getDateTimeSeries方法部分。
+5.目前支持同tushare中获取数据并存入数据库中：data_sql.py,数据库为postgress（暂未支持pyalgotrade，pyalgtrade相关功能重写中）
+    调用constant.py,数据库连接等设置在此处，其他数据库也一样
+    方法：
+        支持对h_data、hist_data、realtime_quotes等的get、set方法，其中set为获取数据并存入数据库中，get为获取数据库数据
+        详见方法内注释
+
       
