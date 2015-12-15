@@ -141,8 +141,8 @@ def set_realtime_quotes(code=['sh'],pause = 10):
             _data_[item].append(df)
         time.sleep(pause) 
         curTime = datetime.now() 
-        
-    _data_.to_sql('realtime_data',engine,if_exists='append')
+    for ite in code:
+        _data_[ite].to_sql('realtime_data',engine,if_exists='append')
     return _data_
         
     
