@@ -42,7 +42,8 @@
     需在pyalgo_test.py中添加addInfo信息，具体内容有注释
     ****注意：此方法只为监测数据并返回array，json等格式自己作图用。pyalgotrade本身已带作图方法及基础的信息。
     若不需要可删除调用部分：pyalg_util.py，pyalgo_test.py中的addInfo 方法，调用部分、getDateTimeSeries方法部分。
-5.目前支持同tushare中获取数据并存入数据库中：data_sql.py,数据库为postgress（已经支持pandas_dataFrame为桥进行pyalgotrade回测，代码见pya     lg_2，直接读取功能开发中）
+5.目前支持同tushare中获取数据并存入数据库中：data_sql.py,数据库为postgress（已经支持pandas_dataFrame为桥进行pyalgotrade回测，
+    代码见pyalg_2，直接读取功能开发中）
     调用constant.py,数据库连接等设置在此处，其他数据库也一样
     方法：
         支持对h_data、hist_data、realtime_quotes等的get、set方法，其中set为获取数据并存入数据库中，get为获取数据库数据
