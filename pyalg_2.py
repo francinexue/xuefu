@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Oct 06 11:13:33 2015
-
+turrle_test 提供三种数据加载方式：csv，dataFrame，sql(未完成直接方式，暂由dataFrame为桥)
+dataFrame方式调用同目录util文件夹下的dataFrameBarfeed.py 和dataFramefeed.py
+提供两种数据调取方式，一种为系统自带画图，另一种提供array方式各数据的接口，详见pyalg_utils.py
+vwanp 提供组合管理示例
 @author: lenovo
 """
 
@@ -15,12 +18,24 @@ import pyalg_test
 import constant as ct
 import pandas as pd 
 import json
-import pyalg_utils 
+import pyalg_utils,data
+from utils import dataFramefeed
 
-def turtle_test():
-    # Load the yahoo feed from the CSV file
-    feed = yahoofeed.Feed()
-    feed.addBarsFromCSV("orcl", "D:/data2/600687.csv")
+def turtle_test(load_type = 'csv',dataString = 'pyalg'):
+    if load_type =='csv':
+        #Load the yahoo feed from the CSV file
+        feed = yahoofeed.Feed()
+        feed.addBarsFromCSV("orcl", "D:/data2/600687.csv")
+    elif load_type =='dataFrame':
+        #从dataFrame中加载，
+        dat = pd.read_csv('d:/data/600687.csv',index_col=0,encoding='gbk')
+        feed = dataFramefeed.Feed()
+        feed.addBarsFromDataFrame("orcl", dat)
+    elif load_type == 'sql':
+        #此处也是
+        dat = data_sql.get_h_data('600848')
+        feed = dataFramefeed.Feed()
+        feed.addBarsFromDataFrame("orcl", dat)
     
     # Evaluate the strategy with the feed's bars.
     #myStrategy = pyalg_test.SMACrossOver(feed, "orcl", 20)
@@ -31,18 +46,18 @@ def turtle_test():
     
     # Attach the plotter to the strategy.
     plt = plotter.StrategyPlotter(myStrategy)
-    # Include the SMA in the instrument's subplot to get it displayed along with the closing prices.
-    #plt.getInstrumentSubplot("orcl").addDataSeries("SMA", myStrategy.getSMA())
     # Plot the simple returns on each bar.
-    plt.getOrCreateSubplot("returns").addDataSeries("Simple returns", returnsAnalyzer.getReturns())
-    # Run the strategy.    
-    ds = pyalg_utils.dataSet(myStrategy)   #抽取交易数据集语句，若使用系统自带画图功能则不需要该项
+    plt.getOrCreateSubplot("returns").addDataSeries("Simple returns", returnsAnalyzer.getReturns())  
+    
+    if dataString =='pyalg_util':
+        ds = pyalg_utils.dataSet(myStrategy)   #抽取交易数据集语句，若使用系统自带画图功能则不需要该项
     myStrategy.run()
     myStrategy.info("Final portfolio value: $%.2f" % myStrategy.getResult())
     
-    rs = ds.getDefault()       #获取默认的交易信息，dic格式
-    plot(rs["cumulativeReturns"][:,0],rs["cumulativeReturns"][:,1])  #简单作图示例
-    # Plot the strategy.
+    if dataString =='pyalg_util':
+        rs = ds.getDefault()       #获取默认的交易信息，dic格式
+        plot(rs["cumulativeReturns"][:,0],rs["cumulativeReturns"][:,1])  #简单作图示例
+     
     plt.plot()
 
 def vwap(plot):
@@ -73,5 +88,5 @@ def vwap(plot):
        # print items[0],items[1]
 
 if __name__ == '__main__':
-    vwap(True)
-    #turtle_test()
+    #vwap(True)
+    turtle_test()
