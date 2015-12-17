@@ -18,7 +18,7 @@ import pyalg_test
 import constant as ct
 import pandas as pd 
 import json
-import pyalg_utils,data
+import pyalg_utils,data，data_sql
 from utils import dataFramefeed
 
 def turtle_test(load_type = 'csv',dataString = 'pyalg'):
