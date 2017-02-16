@@ -1,3 +1,14 @@
+Too Long to refresh.很久没有更新。开放共享，共同进步。
+技术问题需要讨论的请直接加群QQ群： 300349971，策略研究实践不吝赐教、讨论或需要技术支持的请加QQ：657959571
+新上传文件功能：
+1.开发环境改为linux系统
+2.dao目录添加mongodb支持，配置文件位于constant，已实现财报、日线等启动时自动更新功能，嫌过慢或卡顿请在源码中调节线程数或注释掉
+3.util文件formula中添加针对DataFrame的技术指标计算，使得即时不用ta-lib和pyalgotrade也能应用
+4.添加ta-lib 以及ta-lib-pyalgotrade 两个版本的技术指标示例，位于strategy/kdj_new 中，其中kdj 的ta-lib不准
+5.添加一使用布朗运动计算大盘牛熊线的应用，名称bbcurve，书籍请看丁鹏量化技术研究，具体参数请自行调节，目测不错
+6.使用事件驱动方式，开发中
+7.准备测试多因子，开发中
+################################################################################
 简版code包含4个py文件，data、constant、pyalg2，pyalgo_test
 1.下载数据：data.py
   调用tushare财经数据包接口，详细内容请读文档：http://pythonhosted.org/tushare/index.html#id2
