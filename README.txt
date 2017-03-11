@@ -17,8 +17,9 @@ Too Long to refresh.很久没有更新。开放共享，共同进步。
       1.sava_data():（需运行）
         下载全部tushare数据至d:/data/目录，格式为0004.csv
         code.csv为全部代码
-        code_inuse.csv为过滤数据项较全的代码，可忽略
-      2.refresh_data():
+        code_inuse.csv为过滤数据项较全的代码，可忽略，
+       示例csv在根目录，如果提示出错找不到，就把源文件那块的路径改成当前目录
+  2.refresh_data():
          每次下载以往数据设定了某一天，若需更新至当日，调用此方法
       3.plt_macd()
          算出macd并作图的示例
