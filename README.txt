@@ -27,7 +27,7 @@ Too Long to refresh.很久没有更新。开放共享，共同进步。
          此处使用的为inuse数据，可以更改为code.csv
       5.get_beta():
         算beta示例
-2.进行测试：pyalg_2.py
+2.进行测试：pyalg_2.py，根目录运行这个文件，其他的pyalgo_test.py，pyalg_util.py 不运行
   调用pyalgotrade方法进行回测，详细内容请读文档：http://gbeced.github.io/pyalgotrade/docs/v0.17/html/tutorial.html
   调用pyalgo_test.py文件
   调用pyalg_util.py文件
