@@ -41,7 +41,7 @@ def save_data():
 #从网络中更新数据,code 必须为str，dat中的为int
 def refresh_data(_start_ ='2015-08-01',_end_ = ct._TODAY_):
     dat = pd.read_csv('d:/data/code.csv',index_col=0,dtype={'code': str},encoding='gbk')
-    inuse = pd.read_csv('d:/data/code_inuse.csv',index_col=0,parse_dates=[0],dtype={'code': str},encoding='gbk')
+    inuse = pd.read_csv('d:/data/code_inuse.csv',index_col=0,dtype={'code': str},encoding='gbk')
     new_inuse = []
     
     i=0
@@ -84,7 +84,7 @@ def read_data():
 #仅适用数据头尾完备的code    
 def get_universe():
     try:
-        dat = pd.read_csv('d:/data/code_inuse.csv',dtype={'code': str},index_col=0,parse_dates=[0],encoding='gbk')
+        dat = pd.read_csv('d:/data/code_inuse.csv',dtype={'code': str},index_col=0,encoding='gbk')
     except Exception: 
         dat = ts.get_industry_classified()
     dat = dat.drop_duplicates('code')                                                   #去除重复code
