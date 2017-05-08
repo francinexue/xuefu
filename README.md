@@ -1,6 +1,6 @@
-#写在前面
-Too Long to refresh.很久没有更新。开放共享，共同进步。
-技术问题需要讨论的请直接加群QQ群： 300349971，策略研究实践不吝赐教、讨论或需要技术支持的请加QQ：657959571
+# 写在前面
+>Too Long to refresh.很久没有更新。开放共享，共同进步。
+>技术问题需要讨论的请直接加群QQ群： 300349971，策略研究实践不吝赐教、讨论或需要技术支持的请加QQ：657959571
 新上传文件功能：
 1.开发环境改为linux系统
 2.dao目录添加mongodb支持，配置文件位于constant，已实现财报、日线等启动时自动更新功能，嫌过慢或卡顿请在源码中调节线程数或注释掉
@@ -10,9 +10,9 @@ Too Long to refresh.很久没有更新。开放共享，共同进步。
 6.后面把ctp和a股模拟实盘的例子加进来
 6.使用事件驱动方式，开发中
 7.准备测试多因子，开发中
-#以前内容
-##简版code包含4个py文件，data、constant、pyalg2，pyalgo_test
--##1.下载数据：data.py
+# 以前内容
+## 简版code包含4个py文件，data、constant、pyalg2，pyalgo_test
+## 1.下载数据：data.py
   调用tushare财经数据包接口，详细内容请读文档：[http://pythonhosted.org/tushare/index.html#id2]
   调用constant.py文件，存储部分下载时间的参数
   方法：
@@ -30,7 +30,7 @@ Too Long to refresh.很久没有更新。开放共享，共同进步。
          此处使用的为inuse数据，可以更改为code.csv
       5.get_beta():
         算beta示例
--##2.进行测试：pyalg_2.py，根目录运行这个文件，其他的pyalgo_test.py，pyalg_util.py 不运行
+## 2.进行测试：pyalg_2.py，根目录运行这个文件，其他的pyalgo_test.py，pyalg_util.py 不运行
   调用pyalgotrade方法进行回测，详细内容请读文档：[http://gbeced.github.io/pyalgotrade/docs/v0.17/html/tutorial.html]
   调用pyalgo_test.py文件
   调用pyalg_util.py文件
@@ -39,7 +39,7 @@ Too Long to refresh.很久没有更新。开放共享，共同进步。
       2.turrle_test 提供三种数据加载方式：csv，dataFrame，sql(未完成直接方式，暂由dataFrame为桥)
         dataFrame方式调用同目录util文件夹下的dataFrameBarfeed.py 和dataFramefeed.py
         sql方式数据来自data.sql_py
--##3.回测主体pyalgo_test.py，
+## 3.回测主体pyalgo_test.py，
     主体位于onbar()方法，可使用self.__position和self.marketOrder(element, 100)两种方式，效果一样。
     注意onbar（）是一条条更新，故__init__()中的数据也是随着onbar的滚动而增加。
     如highlow.Low()最后一参数为存储数据个数，[-1]为当前运行结果，[-2]为上一次，用以调节窗口
@@ -50,13 +50,13 @@ Too Long to refresh.很久没有更新。开放共享，共同进步。
         两只股票组合示例
       3.turtle():
         海龟交易法示例  
--##4.最新版本已上传：pyalg_util.py，添加运行时数据信息，格式为dic格式，包含retur、sharpratio、tradeInfo等
+## 4.最新版本已上传：pyalg_util.py，添加运行时数据信息，格式为dic格式，包含retur、sharpratio、tradeInfo等
     调用方法见pyalg_2.py
     调用pyalgo_test.py文件
     需在pyalgo_test.py中添加addInfo信息，具体内容有注释
     ****注意：此方法只为监测数据并返回array，json等格式自己作图用。pyalgotrade本身已带作图方法及基础的信息。
     若不需要可删除调用部分：pyalg_util.py，pyalgo_test.py中的addInfo 方法，调用部分、getDateTimeSeries方法部分。
--##5.目前支持同tushare中获取数据并存入数据库中：data_sql.py,数据库为postgress（已经支持pandas_dataFrame为桥进行pyalgotrade回测，
+## 5.目前支持同tushare中获取数据并存入数据库中：data_sql.py,数据库为postgress（已经支持pandas_dataFrame为桥进行pyalgotrade回测，
     代码见pyalg_2，直接读取功能开发中）
     调用constant.py,数据库连接等设置在此处，其他数据库也一样
     方法：
