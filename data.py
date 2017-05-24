@@ -17,8 +17,8 @@ from pandas import DataFrame
 #sys.setdefaultencoding('utf-8')
 #code为全部，code_inuse为起止日期完备的数据
 dirs = 'd:/data/' #设置数据存储目录
-if not os.path.exists(paths):
-            os.makedirs(paths)
+if not os.path.exists(dirs):
+            os.makedirs(dirs)
         
 def save_data():
     dat = ts.get_industry_classified()
@@ -222,8 +222,9 @@ def bigVolume(scope=15,v_times=5,t_percent=20):
                  print i,code
         except IOError: 
              pass    #不行的话还是continue
-#refresh_data()              
-#change_type_to_yahoo()
-bigVolume()
-#_data_ = pd.read_csv('d:/data/600848.csv',index_col=0,parse_dates=[0],encoding='gbk')   #默认取3年，code为str，start无效的,start 和end若当天有数据则全都取
-#_data_.plot() 
+
+if __name__ == '__main__':
+    save_data()
+    #refresh_data()
+    #get_data('600848')
+
