@@ -13,6 +13,7 @@ import tushare as ts
 import numpy as np
 import time,os
 from pandas import DataFrame
+import statsmodels as sm
 #reload(sys)
 #sys.setdefaultencoding('utf-8')
 #code为全部，code_inuse为起止日期完备的数据
