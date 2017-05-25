@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import  pandas as pd
 import numpy  as np
+import talib as ta
 '''
 用于将日线数据转换为周线、月线，计算ma、macd、ene等指标
 
@@ -55,6 +56,10 @@ def resample(df, _period_='W'):
     dat['low'] = df['low'].resample(_period_).min()
     dat['volume'] = df['volume'].resample(_period_).sum()
     dat['close'] = df['close'].resample(_period_).last()
+    if 'amount' in dat.columns:
+        dat['amount'] = df['amount'].resample(_period_).sum()
+        dat.dropna(inplace=True)
+        return dat[['open', 'high', 'low',  'close','volume','amount']]
     #dat['price_change'] = df['price_change'].resample(_period_).sum()
     #dat['p_change'] = df['p_change'].resample(_period_).apply(lambda x: (x + 1.0).prod() - 1.0)
     dat.dropna(inplace=True)
@@ -272,5 +277,36 @@ def DDI(DF,N,N1,M,M1):#方向标准离差指数
     VAR = pd.DataFrame(DICT)
     return VAR
 
+def ADX(DF,N=14):
+    H = DF['high']
+    L = DF['low']
+    C = DF['close']
 
+    PDI = ta.PLUS_DI(H.values,L.values,C.values,N)
 
+    MDI = ta.MINUS_DI(H.values,L.values,C.values,N)
+    DX = ta.DX(H.values,L.values,C.values,N)
+    ADX = ta.ADX(H.values,L.values,C.values,N)
+    VAR = pd.DataFrame({'PDI':PDI,'MDI':MDI,'DX':DX,'ADX':ADX},index=H.index.values)
+    return VAR
+def AROON(DF,N=20):
+    H = DF['high']
+    L = DF['low']
+    AD,AP = ta.AROON(H.values,L.values,N)
+    AR = AP - AD
+    VAR = pd.DataFrame({'AROON': AR, 'AROON_UP': AP, 'AROON_DOWN': AD}, index=H.index.values)
+    return VAR
+def CCI(DF,N=20):
+    H = DF['high']
+    L = DF['low']
+    C = DF['close']
+    CCI = ta.CCI(H.values, L.values, C.values, N)
+    VAR = pd.DataFrame({'CCI': CCI}, index=H.index.values)
+    return VAR
+
+if __name__ == '__main__':
+
+    import tushare as ts
+    a =ts.get_k_data('600848')
+
+    print CCI(a).tail()

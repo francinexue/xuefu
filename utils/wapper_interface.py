@@ -37,12 +37,12 @@ class gm_api():
     def __init__(self):
         self.ret = md.init('71468641@qq.com', 'jason123')
         self.k_dic = {'5': 300, '15': 15 * 60, '30': 30 * 60, '60': 60 * 60}
-
         # -------------------数据需要分好几段截取--------------------
 
-    def get_k_data(self, code=None, start=None, end=ct._TODAY_, ktype='D'):
+    def get_k_data(self, code=None, start=None, end=ct._TODAY_, ktype='D',isOHLC=True):
 
-        if code[:2] == '60':
+        if code[:2] == '60' or\
+                        code[:2] == '00':
             code = 'SHSE.' + code
         else:
             code = 'SZSE.' + code
@@ -82,11 +82,12 @@ class gm_api():
         dat['date'] = dat['strendtime'].apply(lambda x:x[:10]+' '+x[11:19])
         dat.insert(len(dat.columns), "code", code[5:])
         #dat.index = dat['strtime'].apply(lambda x: datetime.strptime(x, '%Y-%m-%dT%H:%M:%S+08:00'))
-        return dat[['date','high', 'low', 'open', 'close', 'volume','code']]
-
+        if isOHLC:
+            return dat[['date','high', 'low', 'open', 'close', 'volume','code']]
+        return dat
 if __name__ == '__main__':
-    code = '300426'
+    code = '600848'
     gm = gm_api()
-    dat = gm.get_k_data(code,'2015-01-01','2016-11-05',ktype='5')
-    #dat.to_csv('d:/data_5minitue/%s.csv'%code,encoding='gbk')
-    print dat
+    dat = gm.get_k_data(code,'2015-01-01',ktype='5',isOHLC=False)
+    dat.to_csv('d:/data_5minitue/%s.csv'%code,encoding='gbk')
+    print dat.head()

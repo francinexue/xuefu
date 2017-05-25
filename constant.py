@@ -42,8 +42,3 @@ _HOST_ =  '127.0.0.1'
 
 _LOG_FILENAME_ = 'logging.conf' #日志配置文件名
 _LOG_CONTENT_NAME_ = 'pg_log' #日志语句提示信息
-
-__SQL1_ = '''CREATE TABLE ts_his(
-        date INTEGER,
-        sv_productname VARCHAR(32)
-        );'''
