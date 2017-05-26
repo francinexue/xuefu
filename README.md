@@ -16,54 +16,17 @@
 - 使用事件驱动方式，开发中
 - 准备测试多因子，开发中
 # *以前内容* #
->简版code包含4个py文件，data、constant、pyalg2，pyalgo_test
-## 1.下载数据：data.py ##
-  > - 调用tushare财经数据包接口，详细内容请读文档：[http://pythonhosted.org/tushare/index.html#id2]
-  > - 调用constant.py文件，存储部分下载时间的参数
- 
-###  sava_data()（需运行） ###
-- 下载全部tushare数据至d:/data/目录，格式为0004.csv
-- code.csv为全部代码
-- code_inuse.csv为过滤数据项较全的代码，可忽略，
-- 示例csv在根目录，如果提示出错找不到，就把源文件那块的路径改成当前目录
-### refresh_data() ###
-- 每次下载以往数据设定了某一天，若需更新至当日，调用此方法
-### plt_macd() ###
-- 算出macd并作图的示例
-### change_type_to_yahoo()(需运行） ###
-- 下载完成后需调用此方法转换为pyalotrade可识别的类型，存储于d:/data2/,格式为0019.csv 
-- **此处使用的为inuse数据，可以更改为code.csv**
-### get_beta() ###
-- 算beta示例
+### backtest文件夹 ###
+>- 回测示例
+- csvDemo:从csv读取数据并进行回测，策略为一不完善的海龟交易法
+- pandasDemo:**使pyalgotrade支持pandas的示例，并包含从tushare直接读取数据和从csv读入到pandas两种方式**
+  提供两种数据调取方式，一种为系统自带画图，另一种提供array方式回测结果的各数据的接口，详见cn.lib.pyalg_utils.py,添加运行时数据信息，格式为dic格式，包含return、sharpratio、tradeInfo等
+  ***注意：此方法只为监测数据并返回array，json等格式自己作图用。pyalgotrade本身已带作图方法及基础的信息。若不需要可删除调用部分：pyalg_util.py，pyalgo_test.py中的addInfo 方法，调用部分、getDateTimeSeries方法部分。***
+- sqlDemo:从数据库 postgres中读取或mongodb中读取两个示例
+- porfolioDemo:多股票或合约回测策略，示例代码为简单的动量策略
+- indexBBcurveDemo:指数择时策略示例，根据丁鹏-<量化投资策略与技术>书中描述的依据布朗运动计算牛熊线，判断大盘指数，并作为择时操作的依据，牛市、熊市、震荡市策略各有不同
+此处择时买卖策略仅是简单的超过牛线则买入，跌破熊线则卖出
+- minuWithDayDemo:日线和分钟线混合回测的例子，即本来使用5分钟线进行测试，但是中间还应用日线的各种指标，比如突破NN 日均线等
+本例子是通过计算ENE轨道，对每日k线突破上轨，中轨，下轨等不同情形进行运算
+- talibDemo:ta-lib示例，示例包含使用原生talib,pyalgotrade自带talib，调用自己写的util.formular中的公式,策略代码包含kdj aroon adx 3套策略示例
 
-## 2.进行测试：pyalg_2.py ##
->- 根目录运行这个文件，其他的pyalgo_test.py，pyalg_util.py 不运行
-- 调用pyalgotrade方法进行回测，详细内容请读文档：[http://gbeced.github.io/pyalgotrade/docs/v0.17/html/tutorial.html]
-- 调用pyalgo_test.py文件
-- 调用pyalg_util.py文件
-### 方法 
-- 提供两个测试方法： turtle_test():和vwap(plot):，底部有调用
-- turrle_test 提供三种数据加载方式：csv，dataFrame，sql(未完成直接方式，暂由dataFrame为桥)
-- dataFrame方式调用同目录util文件夹下的dataFrameBarfeed.py 和dataFramefeed.py
-- sql方式数据来自data.sql_py**
-## 3.回测主体pyalgo_test.py
->- 主体位于onbar()方法，可使用self.__position和self.marketOrder(element, 100)两种方式，效果一样。
->- 注意onbar（）是一条条更新，故__init__()中的数据也是随着onbar的滚动而增加。
->- 如highlow.Low()最后一参数为存储数据个数，[-1]为当前运行结果，[-2]为上一次，用以调节窗口
-### 方法 ###
-- 1.SMACrossOver():示例方法
-- 2.VWAPMomentum():两只股票组合示例
-- 3.turtle(): 海龟交易法示例  
-## 4.最新版本已上传：pyalg_util.py ##
->- 添加运行时数据信息，格式为dic格式，包含retur、sharpratio、tradeInfo等
->- 调用方法见pyalg_2.py
->- 调用pyalgo_test.py文件
->- 需在pyalgo_test.py中添加addInfo信息，具体内容有注释
->
-***注意：此方法只为监测数据并返回array，json等格式自己作图用。pyalgotrade本身已带作图方法及基础的信息。若不需要可删除调用部分：pyalg_util.py，pyalgo_test.py中的addInfo 方法，调用部分、getDateTimeSeries方法部分。***
-## 5.目前支持同tushare中获取数据并存入数据库中 data_sql.py ##
-> 数据库为postgress（已经支持pandas_dataFrame为桥进行pyalgotrade回测，代码见pyalg_2，直接读取功能开发中）
-- 调用constant.py,数据库连接等设置在此处，其他数据库也一样
-### 方法 ###
-- 支持对h_data、hist_data、realtime_quotes等的get、set方法，其中set为获取数据并存入数据库中，get为获取数据库数据
-- 详见方法内注释
