@@ -79,6 +79,8 @@ class RowParser(dataFrameBarfeed.RowParser):
         if isinstance(row[0],str) or isinstance(row[0],unicode) :
             if len(row[0].strip())==19:
                 dateTime = datetime.datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S') #date
+            elif len(row[0].strip())==16:  #tushare～～～～
+                dateTime = datetime.datetime.strptime(row[0][:16], '%Y-%m-%d %H:%M')  # date
             else:
                dateTime = datetime.datetime.strptime(row[0][:10],'%Y-%m-%d' ) #date
         else:
