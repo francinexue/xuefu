@@ -33,7 +33,7 @@ from pyalgotrade import resamplebase
 import pyalgotrade.logger
 from pyalgotrade.utils import dt
 import tushare as ts
-from quant.cn.lib import dataFramefeed
+from cn.lib import dataFramefeed
 
 logger = pyalgotrade.logger.getLogger("tushare")
 KTYPE_TO_BASE_FREQUENCY = {'5': bar.Frequency.MINUTE, '15': bar.Frequency.MINUTE, '30': bar.Frequency.MINUTE,
