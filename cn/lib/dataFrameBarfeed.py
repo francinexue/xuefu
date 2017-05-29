@@ -18,14 +18,15 @@
 .. moduleauthor:: Gabriel Martin Becedillas Ruiz <gabriel.becedillas@gmail.com>
 """
 
-from pyalgotrade.utils import dt
-from pyalgotrade.utils import csvutils
-from pyalgotrade.barfeed import membf
-from pyalgotrade import dataseries
-from pyalgotrade import bar
-
 import datetime
+
 import pytz
+from pyalgotrade import barfeed, utils
+from pyalgotrade import dataseries
+from pyalgotrade.utils import dt
+
+import bar
+import tickfeed
 
 
 # Interface for csv row parsers.
@@ -88,7 +89,7 @@ class USEquitiesRTH(DateRangeFilter):
         return ret
 
 
-class BarFeed(membf.BarFeed):
+class BarFeed(barfeed.BaseBarFeed):
     """Base class for CSV file based :class:`pyalgotrade.barfeed.BarFeed`.
 
     .. note::
@@ -96,9 +97,88 @@ class BarFeed(membf.BarFeed):
     """
 
     def __init__(self, frequency, maxLen=dataseries.DEFAULT_MAX_LEN):
-        membf.BarFeed.__init__(self, frequency, maxLen)
+        barfeed.BaseBarFeed.__init__(self, frequency, maxLen)
+        self.__bars = {}
+        self.__nextPos = {}
+        self.__started = False
+        self.__currDateTime = None
         self.__barFilter = None
         self.__dailyTime = datetime.time(0, 0, 0)
+
+    def reset(self):
+        self.__nextPos = {}
+        for instrument in self.__bars.keys():
+            self.__nextPos.setdefault(instrument, 0)
+        self.__currDateTime = None
+        super(BarFeed, self).reset()
+
+    def getCurrentDateTime(self):
+        return self.__currDateTime
+
+    def start(self):
+        super(BarFeed, self).start()
+        self.__started = True
+
+    def stop(self):
+        pass
+
+    def join(self):
+        pass
+
+    def addBarsFromSequence(self, instrument, bars):
+        if self.__started:
+            raise Exception("Can't add more bars once you started consuming bars")
+
+        self.__bars.setdefault(instrument, [])
+        self.__nextPos.setdefault(instrument, 0)
+        # Add and sort the bars
+        self.__bars[instrument].extend(bars)
+        barCmp = lambda x, y: cmp(x.getDateTime(), y.getDateTime())
+        self.__bars[instrument].sort(barCmp)
+
+        self.registerInstrument(instrument)
+
+    def eof(self):
+        ret = True
+        # print 'called eof'
+        # Check if there is at least one more bar to return.
+        for instrument, bars in self.__bars.iteritems():
+            nextPos = self.__nextPos[instrument]
+            if nextPos < len(bars):
+                ret = False
+                break
+        return ret
+
+    def peekDateTime(self):
+        ret = None
+        for instrument, bars in self.__bars.iteritems():
+            nextPos = self.__nextPos[instrument]
+            if nextPos < len(bars):
+                ret = utils.safe_min(ret, bars[nextPos].getDateTime())
+        return ret
+
+    def getNextBars(self):
+        # All bars must have the same datetime. We will return all the ones with the smallest datetime.
+        smallestDateTime = self.peekDateTime()
+        if smallestDateTime is None:
+            return None
+
+        # Make a second pass to get all the bars that had the smallest datetime.
+        ret = {}
+        for instrument, bars in self.__bars.iteritems():
+            nextPos = self.__nextPos[instrument]
+            if nextPos < len(bars) and bars[nextPos].getDateTime() == smallestDateTime:
+                ret[instrument] = bars[nextPos]
+                self.__nextPos[instrument] += 1
+        if self.__currDateTime == smallestDateTime:
+            raise Exception("Duplicate bars found for %s on %s" % (ret.keys(), smallestDateTime))
+
+        self.__currDateTime = smallestDateTime
+        return bar.Bars(ret)
+
+    def loadAll(self):
+        for dateTime, bars in self:
+            pass
 
     def getDailyBarTime(self):
         return self.__dailyTime
@@ -111,13 +191,130 @@ class BarFeed(membf.BarFeed):
 
     def setBarFilter(self, barFilter):
         self.__barFilter = barFilter
-        
-    #使用apply+handler最提高效率，但是层层调用显得麻烦
-    def addBarsFromDataFrame(self, instrument,rowParser,df):
+
+    # 使用apply+handler最提高效率，但是层层调用显得麻烦
+    def addBarsFromDataFrame(self, instrument, rowParser, df):
         # Load the csv file
         loadedBars = []
         for row in df.iterrows():
             bar_ = rowParser.parseBar(row)
+            if bar_ is not None and (self.__barFilter is None or self.__barFilter.includeBar(bar_)):
+                loadedBars.append(bar_)
+
+        self.addBarsFromSequence(instrument, loadedBars)
+
+
+class TickFeed(tickfeed.BaseBarFeed):
+    """Base class for CSV file based :class:`pyalgotrade.barfeed.BarFeed`.
+
+    .. note::
+        This is a base class and should not be used directly.
+    """
+
+    def __init__(self, frequency, maxLen=dataseries.DEFAULT_MAX_LEN):
+        tickfeed.BaseBarFeed.__init__(self, frequency, maxLen)
+        self.__bars = {}
+        self.__nextPos = {}
+        self.__started = False
+        self.__currDateTime = None
+        self.__barFilter = None
+        self.__dailyTime = datetime.time(0, 0, 0)
+
+    def reset(self):
+        self.__nextPos = {}
+        for instrument in self.__bars.keys():
+            self.__nextPos.setdefault(instrument, 0)
+        self.__currDateTime = None
+        super(TickFeed, self).reset()
+
+    def getCurrentDateTime(self):
+        return self.__currDateTime
+
+    def start(self):
+        super(TickFeed, self).start()
+        self.__started = True
+
+    def stop(self):
+        pass
+
+    def join(self):
+        pass
+
+
+    def addBarsFromSequence(self, instrument, bars):
+        if self.__started:
+            raise Exception("Can't add more bars once you started consuming bars")
+
+        self.__bars.setdefault(instrument, [])
+        self.__nextPos.setdefault(instrument, 0)
+        # Add and sort the bars
+        self.__bars[instrument].extend(bars)
+        barCmp = lambda x, y: cmp(x.getDateTime(), y.getDateTime())
+        self.__bars[instrument].sort(barCmp)
+
+        self.registerInstrument(instrument)
+
+    def eof(self):
+        ret = True
+        # print 'called eof'
+        # Check if there is at least one more bar to return.
+        for instrument, bars in self.__bars.iteritems():
+            nextPos = self.__nextPos[instrument]
+            if nextPos < len(bars):
+                ret = False
+                break
+        return ret
+
+    def peekDateTime(self):
+        ret = None
+        for instrument, bars in self.__bars.iteritems():
+            nextPos = self.__nextPos[instrument]
+            if nextPos < len(bars):
+                ret = utils.safe_min(ret, bars[nextPos].getDateTime())
+        return ret
+
+    def getNextBars(self):
+        # All bars must have the same datetime. We will return all the ones with the smallest datetime.
+        smallestDateTime = self.peekDateTime()
+        if smallestDateTime is None:
+            return None
+
+        # Make a second pass to get all the bars that had the smallest datetime.
+        ret = {}
+        for instrument, bars in self.__bars.iteritems():
+            nextPos = self.__nextPos[instrument]
+            if nextPos < len(bars) and bars[nextPos].getDateTime() == smallestDateTime:
+                ret[instrument] = bars[nextPos]
+                self.__nextPos[instrument] += 1
+        if self.__currDateTime == smallestDateTime:
+            raise Exception("Duplicate bars found for %s on %s" % (ret.keys(), smallestDateTime))
+
+        self.__currDateTime = smallestDateTime
+        return bar.Bars(ret)
+
+    def loadAll(self):
+        for dateTime, bars in self:
+            pass
+
+    def getDailyBarTime(self):
+        return self.__dailyTime
+
+    def setDailyBarTime(self, time):
+        self.__dailyTime = time
+
+    def getBarFilter(self):
+        return self.__barFilter
+
+    def setBarFilter(self, barFilter):
+        self.__barFilter = barFilter
+
+        # 使用apply+handler最提高效率，但是层层调用显得麻烦
+
+    def addBarsFromDataFrame(self, instrument, rowParser,df):
+        # Load the csv file
+        loadedBars = []
+        for id,row in df.iterrows():
+            bar_ = rowParser.parseTickBar(id,row)
             if bar_ is not None and (self.__barFilter is None or self.__barFilter.includeBar(bar_)):
                 loadedBars.append(bar_)
 
@@ -174,84 +371,3 @@ class GenericRowParser(RowParser):
                 adjClose = float(adjCloseValue)
                 self.__haveAdjClose = True
         return bar.BasicBar(dateTime, open_, high, low, close, volume, adjClose, self.__frequency)
-
-
-class GenericBarFeed(BarFeed):
-    """A BarFeed that loads bars from CSV files that have the following format:
-    ::
-
-        Date Time,Open,High,Low,Close,Volume,Adj Close
-        2013-01-01 13:59:00,13.51001,13.56,13.51,13.56,273.88014126,13.51001
-
-    :param frequency: The frequency of the bars. Check :class:`pyalgotrade.bar.Frequency`.
-    :param timezone: The default timezone to use to localize bars. Check :mod:`pyalgotrade.marketsession`.
-    :type timezone: A pytz timezone.
-    :param maxLen: The maximum number of values that the :class:`pyalgotrade.dataseries.bards.BarDataSeries` will hold.
-        Once a bounded length is full, when new items are added, a corresponding number of items are discarded from the opposite end.
-    :type maxLen: int.
-
-    .. note::
-        * The CSV file **must** have the column names in the first row.
-        * It is ok if the **Adj Close** column is empty.
-        * When working with multiple instruments:
-
-         * If all the instruments loaded are in the same timezone, then the timezone parameter may not be specified.
-         * If any of the instruments loaded are in different timezones, then the timezone parameter should be set.
-    """
-
-    def __init__(self, frequency, timezone=None, maxLen=dataseries.DEFAULT_MAX_LEN):
-        BarFeed.__init__(self, frequency, maxLen)
-        self.__timezone = timezone
-        # Assume bars don't have adjusted close. This will be set to True after
-        # loading the first file if the adj_close column is there.
-        self.__haveAdjClose = False
-
-        self.__dateTimeFormat = "%Y-%m-%d %H:%M:%S"
-        self.__columnNames = {
-            "datetime": "Date Time",
-            "open": "Open",
-            "high": "High",
-            "low": "Low",
-            "close": "Close",
-            "volume": "Volume",
-            "adj_close": "Adj Close",
-        }
-        # self.__dateTimeFormat expects time to be set so there is no need to
-        # fix time.
-        self.setDailyBarTime(None)
-
-    def barsHaveAdjClose(self):
-        return self.__haveAdjClose
-
-    def setNoAdjClose(self):
-        self.__columnNames["adj_close"] = None
-        self.__haveAdjClose = False
-
-    def setColumnName(self, col, name):
-        self.__columnNames[col] = name
-
-    def setDateTimeFormat(self, dateTimeFormat):
-        self.__dateTimeFormat = dateTimeFormat
-
-    def addBarsFromCSV(self, instrument, path, timezone=None):
-        """Loads bars for a given instrument from a CSV formatted file.
-        The instrument gets registered in the bar feed.
-
-        :param instrument: Instrument identifier.
-        :type instrument: string.
-        :param path: The path to the CSV file.
-        :type path: string.
-        :param timezone: The timezone to use to localize bars. Check :mod:`pyalgotrade.marketsession`.
-        :type timezone: A pytz timezone.
-        """
-
-        if timezone is None:
-            timezone = self.__timezone
-
-        rowParser = GenericRowParser(self.__columnNames, self.__dateTimeFormat, self.getDailyBarTime(), self.getFrequency(), timezone)
-        BarFeed.addBarsFromCSV(self, instrument, path, rowParser)
-
-        if rowParser.barsHaveAdjClose():
-            self.__haveAdjClose = True
-        elif self.__haveAdjClose:
-            raise Exception("Previous bars had adjusted close and these ones don't have.")

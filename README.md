@@ -30,4 +30,4 @@
 - minuWithDayDemo:日线和分钟线混合回测的例子，即本来使用5分钟线进行测试，但是中间还应用日线的各种指标，比如突破NN 日均线等
 本例子是通过计算ENE轨道，对每日k线突破上轨，中轨，下轨等不同情形进行运算
 - talibDemo:ta-lib示例，示例包含使用原生talib,pyalgotrade自带talib，调用自己写的util.formular中的公式,策略代码包含kdj aroon adx 3套策略示例
-
+- tickDemo:tick级别回测示例，数据须包含至少ap1，av1,bp1,bv1,datetime五个数据

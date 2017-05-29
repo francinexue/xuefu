@@ -21,7 +21,7 @@ u用以转换dataFrame到feed，相当于以pandas dataframe 为桥，不再以c
 import dataFrameBarfeed
 from pyalgotrade.barfeed import common
 from pyalgotrade.utils import dt
-from pyalgotrade import bar
+import bar
 from pyalgotrade import dataseries
 
 import datetime
@@ -97,6 +97,27 @@ class RowParser(dataFrameBarfeed.RowParser):
 
         return bar.BasicBar(dateTime, open_, high, low, close, volume, adjClose, self.__frequency)
 
+        # row的结构 row[0]为时间，string类型。row[1]为Series类型:'open'\high\close\low\volume\amoun或price——change等，前面6项和tushare 对应
+
+    def parseTickBar(self,id,row):
+        """
+        转换tick格式的bar,将‘ap’或‘ap1’作为tickds.__apDataSeries 以及bar.__ap
+        :param row:,tick的格式稍微简单，设置一个defaluttick format
+        :return:
+        """
+        tmp_extra = {}
+        for key in row.index:
+                # extract extra component
+            if key not in ['open','ap1','bp1','av1','bv1','high', 'low', 'close', 'volume', 'amount', 'preclose'
+            , 'new_price', 'bought_amount', 'sold_amount', 'bought_volume', 'sold_volume'
+            , 'frequency']:
+                tmp_extra[key] = row[key]
+
+        return bar.BasicTick(id, row['open'], row['high'], row['low'], row['close'], row['volume']
+                                   , row['amount'], row['bp1'],row['bv1'],row['ap1'], row['av1'], row['preclose'],
+                                   row['bought_volume']
+                                   , row['sold_volume'], row['bought_amount'], row['sold_amount'],bar.Frequency.TRADE, False,
+                                   tmp_extra)
 
 class Feed(dataFrameBarfeed.BarFeed):
     """A :class:`pyalgotrade.barfeed.csvfeed.BarFeed` that loads bars from CSV files downloaded from Yahoo! Finance.
@@ -154,3 +175,70 @@ class Feed(dataFrameBarfeed.BarFeed):
 
         rowParser = RowParser(self.getDailyBarTime(), self.getFrequency(), timezone, self.__sanitizeBars)
         dataFrameBarfeed.BarFeed.addBarsFromDataFrame(self, instrument,rowParser,dataFrame)
+
+class TickFeed(dataFrameBarfeed.TickFeed):
+    """A :class:`pyalgotrade.barfeed.csvfeed.BarFeed` that loads bars from CSV files downloaded from Yahoo! Finance.
+
+    :param frequency: The frequency of the bars. Only **pyalgotrade.bar.Frequency.DAY** or **pyalgotrade.bar.Frequency.WEEK**
+        are supported.
+    :param timezone: The default timezone to use to localize bars. Check :mod:`pyalgotrade.marketsession`.
+    :type timezone: A pytz timezone.
+    :param maxLen: The maximum number of values that the :class:`pyalgotrade.dataseries.bards.BarDataSeries` will hold.
+        Once a bounded length is full, when new items are added, a corresponding number of items are discarded from the opposite end.
+    :type maxLen: int.
+
+    .. note::
+        Yahoo! Finance csv files lack timezone information.
+        When working with multiple instruments:
+
+            * If all the instruments loaded are in the same timezone, then the timezone parameter may not be specified.
+            * If any of the instruments loaded are in different timezones, then the timezone parameter must be set.
+    """
+
+    def __init__(self, frequency=bar.Frequency.TRADE, timezone=None,maxLen=dataseries.DEFAULT_MAX_LEN):
+        if isinstance(timezone, int):
+            raise Exception("timezone as an int parameter is not supported anymore. Please use a pytz timezone instead.")
+        dataFrameBarfeed.TickFeed.__init__(self, frequency, maxLen)
+        self.__timezone = timezone
+        self.__sanitizeBars = False
+        self.__datetime_format = '%Y-%m-%d %H:%M:%S.%f'
+
+    def sanitizeBars(self, sanitize):
+        self.__sanitizeBars = sanitize
+    def set_datetime_format(self,datetime_format):
+        self.__datetime_format = datetime_format
+    def barsHaveAdjClose(self):
+        return True
+
+    def addBarsFromDataFrame(self, instrument,dataFrame,timezone=None):
+        """Loads bars for a given instrument from a CSV formatted file.
+        The instrument gets registered in the bar feed.
+
+        :param instrument: Instrument identifier.
+        :type instrument: string.
+        :param path: The path to the CSV file.
+        :type path: string.
+        :param timezone: The timezone to use to localize bars. Check :mod:`pyalgotrade.marketsession`.
+        :type timezone: A pytz timezone.
+        """
+
+        if isinstance(timezone, int):
+            raise Exception("timezone as an int parameter is not supported anymore. Please use a pytz timezone instead.")
+
+        if timezone is None:
+            timezone = self.__timezone
+        dataFrame = dataFrame.sort_values(by='datetime')
+        dataFrame.drop_duplicates('datetime', inplace=True)
+        dftypes = dataFrame['datetime'].values[0]
+        if isinstance(dftypes,str) or isinstance(dftypes,unicode) :
+            dataFrame.ix[:, 'datetime'] = dataFrame.ix[:, 'datetime'].apply(
+                lambda x: datetime.datetime.strptime(x, self.__datetime_format))
+
+        read_list = ['open', 'high', 'low', 'close', 'volume', 'amount', 'preclose'
+            , 'new_price', 'bought_amount', 'sold_amount', 'bought_volume', 'sold_volume'
+            , 'frequency']
+        for add in read_list:
+            if add not in dataFrame.columns:
+                dataFrame[add] = 0
+        rowParser = RowParser(self.getDailyBarTime(), self.getFrequency(), timezone, self.__sanitizeBars)
+        dataFrameBarfeed.TickFeed.addBarsFromDataFrame(self, instrument,rowParser,dataFrame)
