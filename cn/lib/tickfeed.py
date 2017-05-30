@@ -22,11 +22,11 @@
 
 import abc
 
+from pyalgotrade import dispatchprio
+from pyalgotrade import feed
+
 import bar
 import tickds
-from pyalgotrade import feed
-from pyalgotrade import dispatchprio
-
 
 # This is only for backward compatibility since Frequency used to be defined here and not in bar.py.
 Frequency = bar.Frequency

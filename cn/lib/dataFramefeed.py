@@ -18,13 +18,14 @@
 u用以转换dataFrame到feed，相当于以pandas dataframe 为桥，不再以csv为桥。下一步增加方法直接从数据库中读
 """
 
-import dataFrameBarfeed
+import datetime
+
+from pyalgotrade import dataseries
 from pyalgotrade.barfeed import common
 from pyalgotrade.utils import dt
-import bar
-from pyalgotrade import dataseries
 
-import datetime
+import bar
+import dataFrameBarfeed
 
 
 ######################################################################
@@ -114,10 +115,10 @@ class RowParser(dataFrameBarfeed.RowParser):
                 tmp_extra[key] = row[key]
 
         return bar.BasicTick(id, row['open'], row['high'], row['low'], row['close'], row['volume']
-                                   , row['amount'], row['bp1'],row['bv1'],row['ap1'], row['av1'], row['preclose'],
-                                   row['bought_volume']
-                                   , row['sold_volume'], row['bought_amount'], row['sold_amount'],bar.Frequency.TRADE, False,
-                                   tmp_extra)
+                             , row['amount'], row['bp1'], row['bv1'], row['ap1'], row['av1'], row['preclose'],
+                             row['bought_volume']
+                             , row['sold_volume'], row['bought_amount'], row['sold_amount'], bar.Frequency.TRADE, False,
+                             tmp_extra)
 
 class Feed(dataFrameBarfeed.BarFeed):
     """A :class:`pyalgotrade.barfeed.csvfeed.BarFeed` that loads bars from CSV files downloaded from Yahoo! Finance.
@@ -142,7 +143,7 @@ class Feed(dataFrameBarfeed.BarFeed):
         if isinstance(timezone, int):
             raise Exception("timezone as an int parameter is not supported anymore. Please use a pytz timezone instead.")
 
-        if frequency not in [bar.Frequency.DAY, bar.Frequency.WEEK,bar.Frequency.MINUTE]:
+        if frequency not in [bar.Frequency.DAY, bar.Frequency.WEEK, bar.Frequency.MINUTE]:
             raise Exception("Invalid frequency.")
 
         dataFrameBarfeed.BarFeed.__init__(self, frequency, maxLen)
@@ -174,7 +175,7 @@ class Feed(dataFrameBarfeed.BarFeed):
             timezone = self.__timezone
 
         rowParser = RowParser(self.getDailyBarTime(), self.getFrequency(), timezone, self.__sanitizeBars)
-        dataFrameBarfeed.BarFeed.addBarsFromDataFrame(self, instrument,rowParser,dataFrame)
+        dataFrameBarfeed.BarFeed.addBarsFromDataFrame(self, instrument, rowParser, dataFrame)
 
 class TickFeed(dataFrameBarfeed.TickFeed):
     """A :class:`pyalgotrade.barfeed.csvfeed.BarFeed` that loads bars from CSV files downloaded from Yahoo! Finance.
@@ -195,7 +196,7 @@ class TickFeed(dataFrameBarfeed.TickFeed):
             * If any of the instruments loaded are in different timezones, then the timezone parameter must be set.
     """
 
-    def __init__(self, frequency=bar.Frequency.TRADE, timezone=None,maxLen=dataseries.DEFAULT_MAX_LEN):
+    def __init__(self, frequency=bar.Frequency.TRADE, timezone=None, maxLen=dataseries.DEFAULT_MAX_LEN):
         if isinstance(timezone, int):
             raise Exception("timezone as an int parameter is not supported anymore. Please use a pytz timezone instead.")
         dataFrameBarfeed.TickFeed.__init__(self, frequency, maxLen)
@@ -241,4 +242,4 @@ class TickFeed(dataFrameBarfeed.TickFeed):
             if add not in dataFrame.columns:
                 dataFrame[add] = 0
         rowParser = RowParser(self.getDailyBarTime(), self.getFrequency(), timezone, self.__sanitizeBars)
-        dataFrameBarfeed.TickFeed.addBarsFromDataFrame(self, instrument,rowParser,dataFrame)
+        dataFrameBarfeed.TickFeed.addBarsFromDataFrame(self, instrument, rowParser, dataFrame)
