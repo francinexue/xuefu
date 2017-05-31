@@ -2,6 +2,9 @@
 >- 以可能进行测试所需要的功能点划分，根据编写策略可能出现的编程难点一一作示例
 >- 每个示例里面的策略内容不是重点，当然也可以参考，15年写的版本比较粗糙
 
+# *Demo* #
+>- 展示了使用pyalgotrade获取历史数据进行回测、获取实时数据进行模拟、实盘测试的各类demo，现已有10多个，后期陆续添加，
+   基本覆盖了pyalgotrade所有的方法示例,原作者没有Tick级的内容，现在已更新
 ### backtest文件夹 ###
 >- 回测示例
 - csvDemo:从csv读取数据并进行回测，策略为一不完善的海龟交易法
@@ -15,3 +18,8 @@
 - minuWithDayDemo:日线和分钟线混合回测的例子，即本来使用5分钟线进行测试，但是中间还应用日线的各种指标，比如突破NN 日均线等
 本例子是通过计算ENE轨道，对每日k线突破上轨，中轨，下轨等不同情形进行运算
 - talibDemo:ta-lib示例，示例包含使用原生talib,pyalgotrade自带talib，调用自己写的util.formular中的公式,策略代码包含kdj aroon adx 3套策略示例
+- tickDemo:tick级别回测示例，数据须包含至少ap1，av1,bp1,bv1,datetime五个数据
+### live文件夹
+>- 实时数据模拟测试示例，策略书写和回测一样
+- tushareDemo:从tushare中接收5分钟，10,20,30,60，日线，周线等级别的实时数据并加载到pyalgotrade中进行模拟测试
+- tushareTickDemo:从tushare中接收Tick级别的实时数据并加载到pyalgotrade中进行模拟测试

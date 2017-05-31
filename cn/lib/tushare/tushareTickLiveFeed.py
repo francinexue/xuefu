@@ -3,7 +3,7 @@
 # @ rebuild by chinese xuefu@pyalgteam.sdu,please call me leiFeng.<sdu.xuefu@gmail.com>
 # 实现tushare的tick级别livefeed读写，与tushare格式兼容，tick级别的与前面的不一样的地方在于策略需求少，就不预先加载数据了，
 # 需要预先加载数据的可以照着tushareLiveFeed改
-# tushare 请求一条数据平均耗时7秒，可能赶上了速度慢的时候
+# tushare 请求一条数据平均耗时慢的日子7秒，可能赶上了速度慢的时候，平均0.3秒
 # Copyright 2011-2015 Gabriel Martin Becedillas Ruiz
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -51,7 +51,6 @@ class PollingThread(threading.Thread):
         # Wait until getNextCallDateTime checking for cancelation every 0.5 second.
         nextCall = self.getNextCallDateTime()
         start_time = localnow()
-        print "next call time : ", nextCall
         while not self.__stopped and localnow() < nextCall:
             time.sleep((nextCall - start_time).seconds)
 
@@ -99,21 +98,17 @@ def build_bar(barDict):
     startTime = barDict["time"]
     startDateTimeStr = startDate + " " + startTime
     startDateTime = datetime.datetime.strptime(startDateTimeStr, '%Y-%m-%d %H:%M:%S')
-
-    return bar.BasicTick(startDateTime, barDict['open'], barDict['high'], barDict['low'], barDict['pre_close'],
-                         barDict['volume']
-                         , barDict['amount'], barDict['b1_p'], barDict['b1_v'], barDict['a1_p'], barDict['a1_v'],
-                         barDict['pre_close'],
-                         barDict['volume']
-                         , barDict['volume'], barDict['amount'], barDict['amount'],
-                         bar.Frequency.TRADE, False,
-                         {'ap2': barDict['a2_p'], 'ap3': barDict['a3_p'], 'ap4': barDict['a4_p'],
-                          'ap5': barDict['a5_p'], 'bp2': barDict['b2_p'],
-                          'bp3': barDict['b3_p'], 'bp4': barDict['b4_p'], 'bp5': barDict['b5_p'],
-                          'av2': barDict['a2_v'],
-                          'av3': barDict['a3_v'], 'av4': barDict['a4_v'], 'av5': barDict['a5_v'],
-                          'bv2': barDict['b2_v'], 'bv3': barDict['b3_v']
-                             , 'bv4': barDict['b4_v'], 'bv5': barDict['b5_v']})
+    #startDateTime = startDateTime.replace(microsecond=datetime.datetime.now().microsecond)  #rtushare返回的数值没有毫秒，自动添加一个
+    return bar.BasicTick(startDateTime, float(barDict['open']), float(barDict['high']), float(barDict['low']), float(barDict['pre_close']),
+                         float(barDict['volume']), float(barDict['amount']), float(barDict['b1_p']), float(barDict['b1_v']),
+                         float(barDict['a1_p']), float(barDict['a1_v']),float(barDict['pre_close']), float(barDict['volume']),
+                         float(barDict['volume']), float(barDict['amount']), float(barDict['amount']),bar.Frequency.TRADE, False,
+                         {'ap2': float(barDict['a2_p']), 'ap3': float(barDict['a3_p']), 'ap4': float(barDict['a4_p']),
+                          'ap5': float(barDict['a5_p']), 'bp2': float(barDict['b2_p']), 'bp3': float(barDict['b3_p']),
+                          'bp4': float(barDict['b4_p']), 'bp5': float(barDict['b5_p']), 'av2': float(barDict['a2_v']),
+                          'av3': float(barDict['a3_v']), 'av4': float(barDict['a4_v']), 'av5': float(barDict['a5_v']),
+                          'bv2': float(barDict['b2_v']), 'bv3': float(barDict['b3_v']), 'bv4': float(barDict['b4_v']),
+                          'bv5': float(barDict['b5_v'])})
 
 
 class GetBarThread(PollingThread):
@@ -128,6 +123,7 @@ class GetBarThread(PollingThread):
         self.__identifiers = identifiers
         self.__nextCallDatetime = localnow()
         self.__TUSHARE_INQUERY_PERIOD = TUSHARE_INQUERY_PERIOD
+        self.__last_response_time = None  #tushare Feed live 独有，因为tushare返回的tick数据只到秒，导致存在重复的bar。
 
     def getNextCallDateTime(self):
         self.__nextCallDatetime += self.__TUSHARE_INQUERY_PERIOD
@@ -140,9 +136,14 @@ class GetBarThread(PollingThread):
         try:
             a = time.time()
             response = ts.get_realtime_quotes(self.__identifiers)
-            print 'response cost', time.time() - a
-            for identifier in self.__identifiers:
-                barDict[identifier] = build_bar(response[response.code == identifier].iloc[-1])  # dataFrame 格式转换
+            logger.info('response cost: %f'%(time.time()-a))
+            if self.__last_response_time != response.iloc[-1]['time']:
+                for identifier in self.__identifiers:
+                    barDict[identifier] = build_bar(response[response.code == identifier].iloc[-1])  # dataFrame 格式转换
+            else:
+                logger.info("bar is the same with previous bar at time %s,not refresh"%response.iloc[-1]['time'])
+            self.__last_response_time = response.iloc[-1]['time']
+
         except:
             logger.error("tushare time out")
             import traceback
@@ -240,5 +241,5 @@ if __name__ == '__main__':
     while not liveFeed.eof():
         bars = liveFeed.getNextBars()
         if bars is not None:
-            print bars['600848'].getHigh(), bars['600848'].getDateTime()
+            print bars['600848'].getHigh(), bars['600848'].getDateTime(),type(bars['600848'].getVolume())
             # test/

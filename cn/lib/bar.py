@@ -21,7 +21,6 @@
 import abc
 
 
-
 class Frequency(object):
     """Enum like class for bar frequencies. Valid values are:
 

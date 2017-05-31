@@ -22,11 +22,11 @@
 
 import abc
 
-from pyalgotrade import dispatchprio
-from pyalgotrade import feed
-
 import bar
 import tickds
+from pyalgotrade import feed
+from pyalgotrade import dispatchprio
+
 
 # This is only for backward compatibility since Frequency used to be defined here and not in bar.py.
 Frequency = bar.Frequency
@@ -97,7 +97,6 @@ class BaseBarFeed(feed.BaseFeed):
         bars = self.getNextBars()
         if bars is not None:
             dateTime = bars.getDateTime()
-
             # Check that current bar datetimes are greater than the previous one.
             if self.__currentBars is not None and self.__currentBars.getDateTime() >= dateTime:
                 raise Exception(

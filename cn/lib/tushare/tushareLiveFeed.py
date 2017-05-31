@@ -57,8 +57,8 @@ class PollingThread(threading.Thread):
     def __wait(self):
         # Wait until getNextCallDateTime checking for cancelation every 0.5 second.
         nextCall = self.getNextCallDateTime()
-        while not self.__stopped and localnow() < nextCall:
-            time.sleep(0.5)
+        while not self.__stopped and localnow()<nextCall:
+            time.sleep((nextCall-localnow()).total_seconds())
 
     def stop(self):
         self.__stopped = True
@@ -234,7 +234,7 @@ class LiveFeed(dataFramefeed.Feed):
         return self.__thread.stopped()
 
     def peekDateTime(self):
-        return membf.BarFeed.peekDateTime(self)
+        return dataFramefeed.Feed.peekDateTime(self)
 
     ######################################################################
     # barfeed.BaseBarFeed interface
@@ -252,7 +252,7 @@ class LiveFeed(dataFramefeed.Feed):
             if not dataFramefeed.Feed.eof(self):
                 # print 'not eof'
                 # print membf.BarFeed.peekDateTime(self)
-                ret = membf.BarFeed.getNextBars(self)
+                ret = dataFramefeed.Feed.getNextBars(self)
 
             else:
                 self.preload = False
