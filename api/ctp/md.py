@@ -16,6 +16,7 @@ class Md(CtpMd):
         reqLoginField.brokerID = "9999"
         self.reqUserLogin(reqLoginField, 0)
 
+
     def onFrontDisconnected(self, reasonCode):
         print("sssssssssss:")
         print(reasonCode)
