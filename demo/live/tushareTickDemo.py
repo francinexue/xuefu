@@ -7,7 +7,7 @@
 # tushare 请求一条数据平均耗时0.3秒
 
 """
-from quant.cn.lib import bar
+from cn.lib import bar
 from pyalgotrade.broker.fillstrategy import DefaultStrategy
 from pyalgotrade.broker.backtesting import TradePercentage
 from pyalgotrade import strategy
