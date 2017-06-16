@@ -1,0 +1,48 @@
+cmake_minimum_required(VERSION 3.8)
+project(PyCtp)
+# 兼容6.3.7版的CTP系统的客户端
+set(CMAKE_BUILE_TYPE Release)
+
+add_definitions(-DBOOST_PYTHON_STATIC_LIB)
+include_directories(.)
+
+if (UNIX)
+    set(CPT_INCLUDE_DIRS lib/ctpapi/linux_x64)
+    set(CPT_LIBRARY_DIRS lib/ctpapi/linux_x64)
+elseif(WIN32)
+    if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+        set(CPT_INCLUDE_DIRS lib/ctpapi/win_x64)
+        set(CPT_LIBRARY_DIRS lib/ctpapi/win_x64)
+    else()
+        set(CPT_INCLUDE_DIRS lib/ctpapi/win_x86)
+        set(CPT_LIBRARY_DIRS lib/ctpapi/win_x86)
+    endif()
+endif()
+include_directories(${CPT_INCLUDE_DIRS})
+link_directories(${CPT_LIBRARY_DIRS})
+set(CTP_MD_LIBRARY thostmduserapi)
+set(CPT_TD_LIBRARY thosttraderapi)
+
+find_package(PythonInterp)
+find_package(PythonLibs)
+include_directories(${PYTHON_INCLUDE_DIRS})
+
+set(BOOST_ROOT /usr/local/boost)
+SET(Boost_USE_STATIC_LIBS  ON)
+find_package(Boost REQUIRED COMPONENTS python thread)
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
+set(CMAKE_CXX_STANDARD 11)
+
+set(SOURCE_FILES base.h)
+#add_library(ctp SHARED ${SOURCE_FILES})
+#add_library(ctp ${SOURCE_FILES})
+#set_target_properties(ctp PROPERTIES PREFIX "")
+#if(WIN32)
+#    set_target_properties(ctp PROPERTIES SUFFIX ".pyd")
+#endif(WIN32)
+#target_link_libraries(ctp ${PYTHON_LIBRARIES} ${Boost_LIBRARIES})
+
+add_subdirectory(ctpmd)
+add_subdirectory(ctptd)
+#%s/^\s\+TThostFtdc\(\w\+\)Type\s\(\w\+\);$/void set\2(std::string v){\rstd::copy(v.begin(), v.end(), (char *)\&(this->\2));\r*((char *)\&(this->\2) + v.size()) = '\\0';\r}\r\rconst char* get\2() {\rreturn (const char *)\&(this->\2);\r}\r\r/
