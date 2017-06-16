@@ -23,7 +23,7 @@
   >- 提供两种数据调取方式，一种为系统自带画图，另一种提供array方式回测结果的各数据的接口，详见cn.lib.pyalg_utils.py,
   >- 注意：此方法只为监测数据并返回array，json等格式自己作图用。pyalgotrade本身已带作图方法及基础的信息。若不需要可删除调用部分：pyalg_util.py，pyalgo_test.py中的addInfo 方法，调用部分、getDateTimeSeries方法部分。
 - sqlDemo:从数据库 postgres中读取或mongodb中读取两个示例
-- porfolioDemo:多股票或合约回测策略，示例代码为简单的动量策略
+- porfolioDemo:多股票或合约回测策略，示例代码为简单的动量策略 
 - indexBBcurveDemo:指数择时策略示例，根据丁鹏-<量化投资策略与技术>书中描述的依据布朗运动计算牛熊线，判断大盘指数，并作为择时操作的依据，牛市、熊市、震荡市策略各有不同
 此处择时买卖策略仅是简单的超过牛线则买入，跌破熊线则卖出
 - minuWithDayDemo:日线和分钟线混合回测的例子，即本来使用5分钟线进行测试，但是中间还应用日线的各种指标，比如突破NN 日均线等
