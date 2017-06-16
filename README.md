@@ -8,8 +8,9 @@
 - *ctp支持win32,64,linux64,自己编译的，方便想直接底层调用接口进行交易的人，api位于api.ctpx,demo见demo.live.ctpdemo,
 该demo继承了td和md的回调函数，未用轮询的方式获取数据及交易信息，对响应速度有较高要求的人员可以在这个基础上进行二次开发，
 对时间不敏感的可以直接使用pyalgotrade的框架进行交易*
-- 添加docker环境配置，docker文件夹为独立的模块，作者为我同学liqi@pyalgotrade-XXX-team.sdu.edu.cn。
-- ctp编译过程手工版也上传，手把手教会编译ctp，ctp文件夹为独立模块，编译过程见目录内md，作者为我同学liqi@pyalgotrade-XXX-team.sdu.edu.cn。
+- 添加docker环境配置，docker文件夹为独立的模块，作者为洒家同学liqi<pyalgotrade-XXX-team.sdu.edu.cn>。
+- ctp编译过程手工版也上传，手把手教会编译ctp，ctp文件夹为独立模块，编译过程见目录内md，
+作者为洒家同学liqi<pyalgotrade-XXX-team.sdu.edu.cn>。
 - *支持tushare实时行情进行模拟或实盘测试，且支持预先加载一部分历史数据，然后再读取实时行情，方便预计算各指标*
 - 准备测试多因子，开发中
 # *Demo* #
