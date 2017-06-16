@@ -5,16 +5,12 @@
 >- 新版本即将更新，会有极大改动
 
 ## 新上传文件功能 ##
-- *ctp支持win32,64,linux64,并兼容vnpy代码，已编译通过，最近几天上传*
-- 添加docker环境配置，近期上传
+- *ctp支持win32,64,linux64,自己编译的，方便想直接底层调用接口进行交易的人，api位于api.ctpx,demo见demo.live.ctpdemo,
+该demo继承了td和md的回调函数，未用轮询的方式获取数据及交易信息，对响应速度有较高要求的人员可以在这个基础上进行二次开发，
+对时间不敏感的可以直接使用pyalgotrade的框架进行交易*
+- 添加docker环境配置，docker文件夹为独立的模块，作者为我同学liqi@pyalgotrade-XXX-team.sdu.edu.cn。
+- ctp编译过程手工版也上传，手把手教会编译ctp，ctp文件夹为独立模块，编译过程见目录内md，作者为我同学liqi@pyalgotrade-XXX-team.sdu.edu.cn。
 - *支持tushare实时行情进行模拟或实盘测试，且支持预先加载一部分历史数据，然后再读取实时行情，方便预计算各指标*
-- 开发环境改为linux系统
-- dao目录添加mongodb支持，配置文件位于constant，已实现财报、日线等启动时自动更新功能，嫌过慢或卡顿请在源码中调节线程数或注释掉
-- util文件formula中添加针对DataFrame的技术指标计算，使得即时不用ta-lib和pyalgotrade也能应用
-- 添加ta-lib 以及ta-lib-pyalgotrade 两个版本的技术指标示例，位于strategy/kdj_new 中，其中kdj 的ta-lib不准
-- 添加一使用布朗运动计算大盘牛熊线的应用，名称bbcurve，书籍请看丁鹏量化技术研究，具体参数请自行调节，目测不错
-- 后面把ctp和a股模拟实盘的例子加进来
-- 使用事件驱动方式，开发中
 - 准备测试多因子，开发中
 # *Demo* #
 >- 展示了使用pyalgotrade获取历史数据进行回测、获取实时数据进行模拟、实盘测试的各类demo，现已有10多个，后期陆续添加，
