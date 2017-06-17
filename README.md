@@ -5,12 +5,12 @@
 >- 新版本即将更新，会有极大改动
 
 ## 新上传文件功能 ##
-- *ctp支持win32,64,linux64,自己编译的，方便想直接底层调用接口进行交易的人，api位于api.ctpx,demo见demo.live.ctpdemo,
-该demo继承了td和md的回调函数，未用轮询的方式获取数据及交易信息，对响应速度有较高要求的人员可以在这个基础上进行二次开发，
-对时间不敏感的可以直接使用pyalgotrade的框架进行交易*
-- 添加docker环境配置，docker文件夹为独立的模块，作者为洒家同学liqi<pyalgotrade-XXX-team.sdu.edu.cn>。
-- ctp编译过程手工版也上传，手把手教会编译ctp，ctp文件夹为独立模块，编译过程见目录内md，
-作者为洒家同学liqi<pyalgotrade-XXX-team.sdu.edu.cn>。
+- 单独封装上期所ctp接口，不同于vnpy和海风版，将原版ctp字段和方法全部移植到python版，只需将方法和字段首字母改成小写即可，最大限度“原汁原味”.
+  cmake_ctp文件夹为独立模块，编译过程见目录内md，作者@liqi
+- ctp支持win32,64,linux64,并附傻瓜式自助编译教程，相关编译脚本已写好，可自己编译最新版ctp。单独文件夹见cmake_ctp.demo 见demo.live.ctpdemo。
+- 对对响应速度有较高要求的人员可在ctpdemo基础上进行二次开发，不敏感的见ctpTickDemo。
+- 添加docker环境配置，docker文件夹为独立的模块，作者为洒家同学liqi.
+- ctp编译过程手工版也上传，手把手教会编译ctp，cmake_ctp文件夹为独立模块，编译过程见目录内md，作者@liqi
 - *支持tushare实时行情进行模拟或实盘测试，且支持预先加载一部分历史数据，然后再读取实时行情，方便预计算各指标*
 - 准备测试多因子，开发中
 # *Demo* #
@@ -34,3 +34,4 @@
 >- 实时数据模拟测试示例，策略书写和回测一样
 - tushareDemo:从tushare中接收5分钟，10,20,30,60，日线，周线等级别的实时数据并加载到pyalgotrade中进行模拟测试
 - tushareTickDemo:从tushare中接收Tick级别的实时数据并加载到pyalgotrade中进行模拟测试
+- ctpdemo:直接继承ctptd和md的监听器listener,对回调的onRtnOrder、onRtnTrade,onBarEvent等进行操作，主要介绍返回的各类状态码，方便二次开发

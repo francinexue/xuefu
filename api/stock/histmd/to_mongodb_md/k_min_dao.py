@@ -7,8 +7,8 @@ import pandas as pd
 import datetime
 import json
 import eventlet as et
-import constant as ct
-from utils.wapper_interface import gm_api as gm
+from quant import constant as ct
+from quant.utils.wapper_interface import gm_api as gm
 from pymongo import MongoClient
 from datetime import datetime
 from datetime import timedelta

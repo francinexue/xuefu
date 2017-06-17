@@ -6,7 +6,8 @@ Created on Fri Oct 14 08:46:27 2016
 """
 import sys
 sys.path.append("..")
-import constant as ct
+
+from quant import constant as ct
 from gmsdk import md,to_dict
 import pandas as pd
 from datetime import datetime,timedelta

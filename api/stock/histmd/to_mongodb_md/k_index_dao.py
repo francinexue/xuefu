@@ -9,8 +9,8 @@ import pandas as pd
 import datetime
 import json
 import eventlet as et
-import constant as ct
-from utils.wapper_interface import tushare as ts
+from quant import constant as ct
+from quant.utils.wapper_interface import tushare as ts
 from pymongo import MongoClient
 from datetime import datetime
 from datetime import timedelta

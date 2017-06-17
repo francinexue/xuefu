@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-#data数据格式见最底部
 import time
 import platform
 import os

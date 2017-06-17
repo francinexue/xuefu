@@ -2,18 +2,13 @@ import os
 import logging.config
 import json
 
-def setup_logging(default_path='logging.json', default_level=logging.INFO, env_key='LOG_CFG'):
-    """Setup logging configuration"""
-    path = default_path
-    value = os.getenv(env_key, None)
-    if value:
-        path = value
-    if os.path.exists(path):
-        with open(path, 'rt') as f:
-            config = json.load(f)
-        logging.config.dictConfig(config)
-    else:
-        logging.basicConfig(level=default_level)
+def __create_logging_path():
+    path = 'logs/'
+    if not os.path.exists(path):
+        os.makedirs(path)
+
+__create_logging_path()
+
 
 logging.config.dictConfig({
     "version": 1,
@@ -37,16 +32,15 @@ logging.config.dictConfig({
             "when": "D",
             "level": "INFO",
             "formatter": "simple",
-            "filename": "info.log",
+            "filename": "logs/info.log",
             "backupCount": 20,
             "encoding": "utf8"
         },
-
         "error_handler": {
             "class": "logging.handlers.RotatingFileHandler",
             "level": "ERROR",
             "formatter": "simple",
-            "filename": "errors.log",
+            "filename": "logs/errors.log",
             "maxBytes": 10485760,
             "backupCount": 20,
             "encoding": "utf8"
@@ -56,7 +50,16 @@ logging.config.dictConfig({
             "class": "logging.handlers.RotatingFileHandler",
             "level": "INFO",
             "formatter": "simple",
-            "filename": "ctptd.log",
+            "filename": "logs/ctptd.log",
+            "maxBytes": 10485760,
+            "backupCount": 20,
+            "encoding": "utf8"
+        },
+         "test_handler": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "INFO",
+            "formatter": "simple",
+            "filename": "logs/test.log",
             "maxBytes": 10485760,
             "backupCount": 20,
             "encoding": "utf8"
@@ -65,7 +68,7 @@ logging.config.dictConfig({
             "class": "logging.handlers.RotatingFileHandler",
             "level": "INFO",
             "formatter": "simple",
-            "filename": "ctptickTrading.log",
+            "filename": "logs/ctptickTrading.log",
             "maxBytes": 10485760,
             "backupCount": 20,
             "encoding": "utf8"
@@ -74,7 +77,7 @@ logging.config.dictConfig({
             "class": "logging.handlers.RotatingFileHandler",
             "level": "INFO",
             "formatter": "simple",
-            "filename": "ctpmd.log",
+            "filename": "logs/ctpmd.log",
             "maxBytes": 10485760,
             "backupCount": 20,
             "encoding": "utf8"
@@ -96,7 +99,13 @@ logging.config.dictConfig({
             "level": "INFO",
             "handlers": ["console", "ctpmd_handler"],
             "propagate": False
-        }
+        },
+
+        "test": {
+            "level": "INFO",
+            "handlers": ["console", "test_handler"],
+            "propagate": False
+        },
     },
 
     "root": {

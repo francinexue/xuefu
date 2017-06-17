@@ -4,7 +4,8 @@ Created on Tue Jul 28 11:04:32 2015
 
 @author: lenovo
 """
-import constant as ct
+
+from quant import constant as ct
 import pylab as plt
 import pandas as pd
 import tushare as ts
