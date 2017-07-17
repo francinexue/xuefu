@@ -33,7 +33,7 @@ from pyalgotrade import resamplebase
 from pyalgotrade.barfeed import membf
 from pyalgotrade.utils import dt
 
-from quant.cn.lib import dataFramefeed, bar
+from quant.cnx.lib import dataFramefeed, bar
 
 logger = pyalgotrade.logger.getLogger("tushare")
 

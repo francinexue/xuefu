@@ -12,8 +12,8 @@ sys.path.append("..")
 
 import pandas as pd
 import minuWithDayDemo_run as mdd
-from cn.lib import pyalg_utils
-from cn.lib import dataFramefeed
+from cnx import pyalg_utils
+from cnx import dataFramefeed
 
 from pyalgotrade import plotter, bar
 from pyalgotrade.tools import resample

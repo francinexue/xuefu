@@ -15,7 +15,7 @@ from pyalgotrade import strategy
 from pyalgotrade.broker import backtesting
 from pyalgotrade.technical import ma
 
-from cn.lib.tushare import tushareLiveFeed
+from cnx.tushare import tushareLiveFeed
 
 
 class LiveDemo_run(strategy.BaseStrategy):

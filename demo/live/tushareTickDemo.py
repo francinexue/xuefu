@@ -7,13 +7,13 @@
 # tushare 请求一条数据平均耗时0.3秒
 
 """
-from cn.lib import bar
+from cnx import bar
 from pyalgotrade.broker.fillstrategy import DefaultStrategy
 from pyalgotrade.broker.backtesting import TradePercentage
 from pyalgotrade import strategy
 from pyalgotrade.broker import backtesting
 from pyalgotrade.technical import ma
-from quant.cn.lib.tushare import tushareTickLiveFeed
+from cnx.tushare import tushareTickLiveFeed
 
 
 

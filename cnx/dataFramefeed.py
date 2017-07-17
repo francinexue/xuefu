@@ -18,13 +18,14 @@
 u用以转换dataFrame到feed，相当于以pandas dataframe 为桥，不再以csv为桥。下一步增加方法直接从数据库中读
 """
 
-import dataFrameBarfeed
+import datetime
+
 from pyalgotrade.barfeed import common
 from pyalgotrade.utils import dt
-import bar
 from pyalgotrade import dataseries
 
-import datetime
+import dataFrameBarfeed
+import bar
 
 
 ######################################################################
@@ -44,6 +45,43 @@ def parse_date(date):
     month = int(date[5:7])
     day = int(date[8:10])
     ret = datetime.datetime(year, month, day)
+    return ret
+def parse_date16(date):
+    # Sample: '%Y-%m-%d %H:%M'
+    # This custom parsing works faster than:
+    # datetime.datetime.strptime(date, "%Y-%m-%d")
+    year = int(date[0:4])
+    month = int(date[5:7])
+    day = int(date[8:10])
+    hour = int(date[11:13])
+    minute = int(date[14:16])
+    ret = datetime.datetime(year, month, day,hour,minute)
+    return ret
+def parse_date19(date):
+    # Sample: '%Y-%m-%d %H:%M:%S'
+    # This custom parsing works faster than:
+    # datetime.datetime.strptime(date, "%Y-%m-%d")
+    year = int(date[0:4])
+    month = int(date[5:7])
+    day = int(date[8:10])
+    hour = int(date[11:13])
+    minute = int(date[14:16])
+    second = int(date[17:19])
+    ret = datetime.datetime(year, month, day,hour,minute,second)
+    return ret
+
+def parse_date23(date):
+    # Sample: '%Y-%m-%d %H:%M:%S.000'
+    # This custom parsing works faster than:
+    # datetime.datetime.strptime(date, "%Y-%m-%d")
+    year = int(date[0:4])
+    month = int(date[5:7])
+    day = int(date[8:10])
+    hour = int(date[11:13])
+    minute = int(date[14:16])
+    second = int(date[17:19])
+    microsecond = int(date[20:23])*1000
+    ret = datetime.datetime(year, month, day,hour,minute,second,microsecond)
     return ret
 
 
@@ -78,11 +116,11 @@ class RowParser(dataFrameBarfeed.RowParser):
     def parseBar(self, row):
         if isinstance(row[0],str) or isinstance(row[0],unicode) :
             if len(row[0].strip())==19:
-                dateTime = datetime.datetime.strptime(row[0], '%Y-%m-%d %H:%M:%S') #date
-            elif len(row[0].strip())==16:  #tushare～～～～
-                dateTime = datetime.datetime.strptime(row[0][:16], '%Y-%m-%d %H:%M')  # date
+                dateTime = parse_date19(row[0]) #date
+            elif len(row[0].strip())==16:  #tushare～～～～16位数据
+                dateTime = parse_date16(row[0])  # date
             else:
-               dateTime = datetime.datetime.strptime(row[0][:10],'%Y-%m-%d' ) #date
+               dateTime = parse_date(row[0]) #date
         else:
             dateTime =row[0]
         close = float(row[1]['close'])
@@ -106,6 +144,9 @@ class RowParser(dataFrameBarfeed.RowParser):
         :return:
         """
         tmp_extra = {}
+        if isinstance(id,str) or isinstance(id,unicode):
+            id = parse_date23(id)
+
         for key in row.index:
                 # extract extra component
             if key not in ['open','ap1','bp1','av1','bv1','high', 'low', 'close', 'volume', 'amount', 'preclose'
@@ -113,10 +154,11 @@ class RowParser(dataFrameBarfeed.RowParser):
             , 'frequency']:
                 tmp_extra[key] = row[key]
 
-        return bar.BasicTick(id, row['open'], row['high'], row['low'], row['close'], row['volume']
-                                   , row['amount'], row['bp1'],row['bv1'],row['ap1'], row['av1'], row['preclose'],
-                                   row['bought_volume']
-                                   , row['sold_volume'], row['bought_amount'], row['sold_amount'],bar.Frequency.TRADE, False,
+        return bar.BasicTick(id, float(row['open']), float(row['high']), float(row['low']), float(row['close']), float(row['volume'])
+                                   , float(row['amount']), float(row['bp1']),float(row['bv1']),float(row['ap1']), float(row['av1']), float(row['preclose']),
+                                   float(row['bought_volume'])
+                                   , float(row['sold_volume']), float(row['bought_amount']), float(row['sold_amount']),
+                             bar.Frequency.TRADE, False,
                                    tmp_extra)
 
 class Feed(dataFrameBarfeed.BarFeed):
@@ -142,7 +184,7 @@ class Feed(dataFrameBarfeed.BarFeed):
         if isinstance(timezone, int):
             raise Exception("timezone as an int parameter is not supported anymore. Please use a pytz timezone instead.")
 
-        if frequency not in [bar.Frequency.DAY, bar.Frequency.WEEK,bar.Frequency.MINUTE]:
+        if frequency not in [bar.Frequency.DAY, bar.Frequency.WEEK, bar.Frequency.MINUTE]:
             raise Exception("Invalid frequency.")
 
         dataFrameBarfeed.BarFeed.__init__(self, frequency, maxLen)
@@ -229,10 +271,10 @@ class TickFeed(dataFrameBarfeed.TickFeed):
             timezone = self.__timezone
         dataFrame = dataFrame.sort_values(by='datetime')
         dataFrame.drop_duplicates('datetime', inplace=True)
-        dftypes = dataFrame['datetime'].values[0]
-        if isinstance(dftypes,str) or isinstance(dftypes,unicode) :
-            dataFrame.ix[:, 'datetime'] = dataFrame.ix[:, 'datetime'].apply(
-                lambda x: datetime.datetime.strptime(x, self.__datetime_format))
+        #dftypes = dataFrame['datetime'].values[0]
+        #if isinstance(dftypes,str) or isinstance(dftypes,unicode) :
+        #    dataFrame.index = dataFrame.index.apply(
+       #         lambda x: datetime.datetime.strptime(x, self.__datetime_format))
 
         read_list = ['open', 'high', 'low', 'close', 'volume', 'amount', 'preclose'
             , 'new_price', 'bought_amount', 'sold_amount', 'bought_volume', 'sold_volume'

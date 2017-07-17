@@ -17,7 +17,7 @@ from pyalgotrade.broker.backtesting import TradePercentage
 from pyalgotrade.broker.fillstrategy import DefaultStrategy
 from pyalgotrade.technical import ma
 
-from cn.lib import dataFramefeed
+from cnx import dataFramefeed
 
 
 class tickDemo_run(strategy.BacktestingStrategy):

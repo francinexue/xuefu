@@ -12,7 +12,7 @@ from pyalgotrade.barfeed import yahoofeed
 from pyalgotrade.stratanalyzer import returns
 
 import pandasDemo_run as pdr
-from cn.lib import pyalg_utils
+from cnx import pyalg_utils
 
 
 def turtle_test(dataString='pyalg'):

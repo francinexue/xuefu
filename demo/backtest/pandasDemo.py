@@ -12,7 +12,7 @@ from pyalgotrade import plotter
 from pyalgotrade.stratanalyzer import returns
 
 import pandasDemo_run as pdr
-from cn.lib import pyalg_utils, dataFramefeed
+from cnx import pyalg_utils, dataFramefeed
 
 
 def turtle_test(loadtype='tushare', dataString='pyalg'):

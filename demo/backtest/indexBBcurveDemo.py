@@ -12,7 +12,7 @@ from pyalgotrade import strategy, plotter
 from pyalgotrade.stratanalyzer import returns, sharpe
 from pyalgotrade.technical import ma, cross
 
-from cn.lib import dataFramefeed, pyalg_utils
+from cnx import dataFramefeed, pyalg_utils
 from utils import BBcurve2
 
 

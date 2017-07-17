@@ -15,8 +15,8 @@ we must use count = len(barDs)
 #at last trans the df of the kdj from utils.formular into backtestStrategy
 """
 
-from cn.lib import dataFramefeed,pyalg_utils
-from utils import pyalg_utils,formular
+from cnx import dataFramefeed,pyalg_utils
+from utils import formular
 import pandas as pd
 from pyalgotrade import strategy, plotter
 from pyalgotrade.technical import ma, cross
