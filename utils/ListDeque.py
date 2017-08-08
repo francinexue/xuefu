@@ -28,3 +28,13 @@ class ListDeque(object):
 
     def __getitem__(self, key):
         return self.__values[key]
+
+    def __setitem__(self, key, value):
+        self.__values[key] = value
+
+    def add(self,value):
+        """
+        :param value:
+        :return:[] + value
+        """
+        return [i + value for i in self.__values]

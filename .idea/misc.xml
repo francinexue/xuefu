@@ -6,5 +6,5 @@
     <annotation-enable>false</annotation-enable>
     <other-services-enabled>false</other-services-enabled>
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 2.7.12 (C:\Anaconda2\python.exe)" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 2.7.5 (/usr/bin/python2.7)" project-jdk-type="Python SDK" />
 </project>
