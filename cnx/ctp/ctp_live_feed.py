@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from quant.api.ctpx.bar_event_listener import BarEventListener
-from quant.api.ctpx.ctpmd import CtpMd
+from api.ctpx.bar_event_listener import BarEventListener
+from api.ctpx.ctpmd import CtpMd
 import threading
 import time
 import datetime
-from quant.cnx.lib import dataFramefeed, bar
+from cnx import dataFramefeed, bar
 
 def localnow():
     return datetime.datetime.now()
