@@ -5,7 +5,7 @@ import tushare as ts
 import pandas as pd
 from datetime import datetime,timedelta
 from gmsdk import md,to_dict
-import constant as ct
+from quant import constant as ct
 """
 添加了异常处理
 """
@@ -41,10 +41,9 @@ class gm_api():
 
     def get_k_data(self, code=None, start=None, end=ct._TODAY_, ktype='D',isOHLC=True):
 
-        if code[:2] == '60' or\
-                        code[:2] == '00':
+        if code[:2] == '60':
             code = 'SHSE.' + code
-        else:
+        else:   #30 or 00
             code = 'SZSE.' + code
 
         if len(start) == 10:
@@ -86,8 +85,8 @@ class gm_api():
             return dat[['date','high', 'low', 'open', 'close', 'volume','code']]
         return dat
 if __name__ == '__main__':
-    code = '600848'
+    code = '002858'
     gm = gm_api()
     dat = gm.get_k_data(code,'2015-01-01',ktype='5',isOHLC=False)
-    dat.to_csv('d:/data_5minitue/%s.csv'%code,encoding='gbk')
+    dat.to_csv('../api/stock/csv/%s.csv'%code,encoding='gbk')
     print dat.head()

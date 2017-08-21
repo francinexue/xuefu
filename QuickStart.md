@@ -7,6 +7,7 @@
 ### 2. 使用pycharm，将xuefu作为项目根目录
 
 `xuefu -> 右键 -> mark directory as -> Source Root`
+`file -> setting -> Build Execution Deployment -> console -> python console -> add source root to PYTHONPATH`
 
 ### 3. 运行demo目录示例
 
