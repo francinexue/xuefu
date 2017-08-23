@@ -141,7 +141,7 @@ class GetBarThread(PollingThread):
 
         barDict = {}
         self.__updateNextBarClose()
-        index_time = ts.get_k_data(code='000001', ktype=self.__precision,index=True).values[-1]
+        index_time = ts.get_k_data(code='000001', ktype=self.__precision,index=True).date.values[-1]
         for identifier in self.__identifiers:
             try:
                 logger.info('loading data online: {0}'.format(identifier))
