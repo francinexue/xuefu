@@ -33,7 +33,7 @@ from pyalgotrade import resamplebase
 import pyalgotrade.logger
 from pyalgotrade.utils import dt
 import tushare as ts
-from quant.cnx.lib import dataFramefeed
+from quant.cnx import dataFramefeed
 
 logger = pyalgotrade.logger.getLogger("tushare")
 KTYPE_TO_BASE_FREQUENCY = {'5': bar.Frequency.MINUTE, '15': bar.Frequency.MINUTE, '30': bar.Frequency.MINUTE,
@@ -130,9 +130,9 @@ class GetBarThread(PollingThread):
 
     # 这段不能省，它是通过计算得出下一次doCall的时间，删了都不知道啥时候该调用了
     def __updateNextBarClose(self):
-        print  'local', localnow()
+
         self.__nextBarClose = resamplebase.build_range(localnow(), self.__frequency).getEnding()
-        print  'nextcall', self.__nextBarClose
+        logger.info('local: {0} ,nextcall: {1}'.format(localnow(),self.__nextBarClose))
 
     def getNextCallDateTime(self):
         return self.__nextBarClose + self.__apiCallDelay
@@ -141,10 +141,14 @@ class GetBarThread(PollingThread):
 
         barDict = {}
         self.__updateNextBarClose()
-        for indentifier in self.__identifiers:
+        index_time = ts.get_k_data(code='000001', ktype=self.__precision,index=True).values[-1]
+        for identifier in self.__identifiers:
             try:
-                response = ts.get_k_data(code=indentifier, ktype=self.__precision)
-                barDict[indentifier] = build_bar(response.iloc[-1], self.__frequency)
+                logger.info('loading data online: {0}'.format(identifier))
+                response = ts.get_k_data(code=identifier, ktype=self.__precision)
+                response_time = response.date.values[-1]
+                if response_time >= index_time:
+                    barDict[identifier] = build_bar(response[response.date == index_time], self.__frequency)    #以指数时间为基准，保持bar的一致性
             except:
                 logger.error("tushare time out")
 
@@ -185,7 +189,6 @@ class LiveFeed(dataFramefeed.Feed):
         """
         global KTYPE_TO_BASE_FREQUENCY, KTYPE_TO_CALL_FREQUENCY
         dataFramefeed.Feed.__init__(self, KTYPE_TO_BASE_FREQUENCY[ktype], None, maxLen)
-
         if not isinstance(identifiers, list):
             raise Exception("identifiers must be a list")
         if preload_start is not None:
@@ -207,11 +210,12 @@ class LiveFeed(dataFramefeed.Feed):
         :return:
         """
 
-        for indentifier in identifiers:
+        for identifier in identifiers:
             try:
-                response = ts.get_k_data(code=indentifier, ktype=ktype, start=start)
+                response = ts.get_k_data(code=identifier, ktype=ktype, start=start)
+                logger.info('preload datas:{0}'.format(identifier))
                 response.index = response.date
-                self.addBarsFromDataFrame(indentifier, response)
+                self.addBarsFromDataFrame(identifier, response)
 
             except:
                 logger.error("tushare time out")
@@ -270,11 +274,11 @@ class LiveFeed(dataFramefeed.Feed):
 
 
 if __name__ == '__main__':
-    liveFeed = LiveFeed(['600848'], '5', preload_start='2017-01-01')
+    liveFeed = LiveFeed(['600848','000001'], '5', preload_start='2017-01-01')
     liveFeed.start()
 
     while not liveFeed.eof():
         bars = liveFeed.getNextBars()
         if bars is not None:
-            print bars['600848'].getHigh(), bars['600848'].getDateTime()
+            print bars['600848'].getHigh(), bars['600848'].getDateTime(),bars['000001'].getHigh()
             # test/
