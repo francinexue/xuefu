@@ -99,16 +99,15 @@ def build_bar(barDict, frequency):
     # "Trades": 19
     # "TWAP": 31.6929
     # "VWAP": 31.693
-
-    startDateTimeStr = barDict["date"]
+    startDateTimeStr = barDict["date"].values()[0]
 
     if len(startDateTimeStr) == 10:
         startDateTime = datetime.datetime.strptime(startDateTimeStr, "%Y-%m-%d")
     else:
         startDateTime = datetime.datetime.strptime(startDateTimeStr[:16], '%Y-%m-%d %H:%M')
 
-    return bar.BasicBar(startDateTime, barDict["open"], barDict["high"], barDict["low"], barDict["close"],
-                        barDict["volume"], None, frequency)
+    return bar.BasicBar(startDateTime, barDict["open"].values()[0], barDict["high"].values()[0], barDict["low"].values()[0], barDict["close"].values()[0],
+                        barDict["volume"].values()[0], None, frequency)
 
 
 class GetBarThread(PollingThread):
@@ -148,7 +147,7 @@ class GetBarThread(PollingThread):
                 response = ts.get_k_data(code=identifier, ktype=self.__precision)
                 response_time = response.date.values[-1]
                 if response_time >= index_time:
-                    barDict[identifier] = build_bar(response[response.date == index_time], self.__frequency)    #以指数时间为基准，保持bar的一致性
+                    barDict[identifier] = build_bar(response[response.date == index_time].to_dict(), self.__frequency)    #以指数时间为基准，保持bar的一致性
             except:
                 logger.error("tushare time out")
 
