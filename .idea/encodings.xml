@@ -2,7 +2,6 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/cnx/tushare/tushareLiveFeed.py" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/cnx/tushare/tushareLiveFeed.py" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/utils/baseUtils.py" charset="UTF-8" />
   </component>
 </project>
