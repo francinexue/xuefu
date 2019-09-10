@@ -2,13 +2,3 @@
 *.log
 /.idea
 .DS_Store
-*.con
-*.html
-*.xml
-*.cache
-*.csv
-*.png
-*.jpg
-*#
-*.h5
-*.xlsx

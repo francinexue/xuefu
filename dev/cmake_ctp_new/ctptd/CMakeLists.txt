@@ -1,0 +1,7 @@
+set(SOURCE_FILES ctptd.h ctptd.cpp)
+add_library(ctptd SHARED ${SOURCE_FILES})
+set_target_properties(ctptd PROPERTIES PREFIX "")
+if(WIN32)
+    set_target_properties(ctptd PROPERTIES SUFFIX ".pyd")
+endif(WIN32)
+target_link_libraries(ctptd ${CPT_TD_LIBRARY} ${PYTHON_LIBRARIES} ${Boost_LIBRARIES})

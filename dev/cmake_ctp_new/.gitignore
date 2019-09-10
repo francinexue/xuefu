@@ -1,0 +1,7 @@
+/.idea/*
+.DS_Store
+/cmake-build-*/*
+/script/*
+!/script/*.sh
+!/script/*.pl
+!/script/README.md
